@@ -1,0 +1,11 @@
+var config = {};
+config.mysql = {};
+config.mysql.host = '';
+config.mysql.username = '';
+config.mysql.password = '';
+config.mysql.database = '';
+config.auth = {};
+config.auth.username = '';
+config.auth.password = '';
+
+module.exports = config;

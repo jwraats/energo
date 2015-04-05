@@ -1,0 +1,18 @@
+<div class="jumbotron">
+        <h1>Api functies</h1>
+    </div>
+    <div class="row marketing">
+{{#each functions as |function|}}
+                <div class="col-lg-6">
+                  <h4>{{{function.function}}}</h4>
+                  {{#if function.returns}}
+                    <b>Return:</b></br>
+                  {{/if}}
+                  {{#each function.returns as |returnValue|}}
+                    - [<i>{{{returnValue.type}}}</i>] {{{returnValue.name}}}</br>
+                  {{/each}}
+                  <b>Omschrijving:</b>
+                  <p>{{{function.description}}}</p>
+                </div>
+            {{/each}}
+</div>

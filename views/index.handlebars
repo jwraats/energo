@@ -1,0 +1,13 @@
+    <div class="jumbotron">
+        <h1>Totaal overzicht</h1>
+        <canvas id="graphsMeter" height="450" width="400"></canvas>
+    </div>
+
+          <div class="row marketing">
+            {{#each meters as |meter|}}
+                <div class="col-lg-6">
+                  <h4>{{{meter.meter}}}</h4>
+                  <p>Momenteel gebruik: {{{meter.gebruik}}}</p>
+                </div>
+            {{/each}}
+          </div>
