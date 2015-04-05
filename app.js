@@ -26,9 +26,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 //Include routes
 var routes = require('./routes/index');
 var api = require('./routes/api');
+var meter = require('./routes/meter');
 
 //ROUTES
 app.use('/', routes);
+app.use('/meter', meter);
 app.use('/api', api);
 
 // catch 404 and forward to error handler

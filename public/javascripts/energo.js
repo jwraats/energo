@@ -26,17 +26,23 @@ var lineChartData = {
 }
 Energo.init = function (){
     $(function() {
-        $.ajax({url: "/api/getGraphs/24", success: function(result){
-            console.log(result);
-            lineChartData.labels = result.labels;
-            lineChartData.datasets[0].data = result.deliver;
-            lineChartData.datasets[1].data = result.green;
-
-            var ctx = document.getElementById("graphsMeter").getContext("2d");
-            window.myLine = new Chart(ctx).Line(lineChartData, {
-                responsive: true
-            });
-        }});
+        hljs.initHighlightingOnLoad();
+        if($('#graphsMeter').length !== 0){
+            Energo.createGraph();
+        }
     });
 };
 Energo.init();
+
+Energo.createGraph = function(){
+    $.ajax({url: "/api/getGraphs/24", success: function(result){
+        lineChartData.labels = result.labels;
+        lineChartData.datasets[0].data = result.deliver;
+        lineChartData.datasets[1].data = result.green;
+
+        var ctx = document.getElementById("graphsMeter").getContext("2d");
+        window.myLine = new Chart(ctx).Line(lineChartData, {
+            responsive: true
+        });
+    }});
+};

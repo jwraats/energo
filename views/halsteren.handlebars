@@ -1,0 +1,101 @@
+
+
+<h4>Python - Raspberry Pi code</h4>
+</br>
+<code class="language-python">
+#External module imports
+import RPi.GPIO as GPIO
+import time
+
+PIN_GPIO = 18
+LIGHT_PIN = 15
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(PIN_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(LIGHT_PIN, GPIO.OUT)
+
+i=0
+
+while True:
+        GPIO.output(LIGHT_PIN, True)
+        time.sleep(0.001)
+        result = GPIO.input(PIN_GPIO)
+        GPIO.output(LIGHT_PIN, False)
+        i += 1
+
+        if(result):
+                print('1 - %f' % (i))
+        else:
+                print('0 - %f' % (i))
+        time.sleep(0.01)
+
+GPIO.cleanup()
+</code>
+</br>
+<h4>Code 2</h4>
+</br>
+<code class="language-python">
+#External module imports
+import RPi.GPIO as GPIO
+import datetime as dt
+import time
+
+PIN_GPIO = 22
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(PIN_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+try:
+        while True:
+                GPIO.wait_for_edge(PIN_GPIO, GPIO.FALLING)
+                timestamp = dt.datetime.now()
+                print timestamp
+                time.sleep(2)
+except KeyboardInterrupt:
+        GPIO.cleanup()
+        print('Stopped')
+
+GPIO.cleanup()
+
+
+
+</code>
+<h4>Netduino</h4>
+</br>
+<code class="language-csharp">
+    public static void Main()
+            {
+                // write your code here
+                // use any analog pin
+                AnalogInput aInPin = new AnalogInput(Pins.GPIO_PIN_A1);
+
+                // give a range.
+                aInPin.SetRange(0, 10000);
+                bool lastHigh = false;
+
+                while (true)
+                {
+                    // Read Pot value
+                    int potValue = (int)aInPin.Read();
+                    if (potValue > 30)
+                    {
+                        if (lastHigh)
+                        {
+                            continue;
+                        }
+                        lastHigh = true;
+                        //Debug.Print("Value: " + potValue.ToString());
+                        Debug.Print(DateTime.Now.ToString() + " = " + potValue);
+                    }
+                    else
+                    {
+                        if (lastHigh)
+                        {
+                            lastHigh = false;
+                        }
+                    }
+                  Thread.Sleep(200);
+                }
+            }
+</code>
