@@ -5,24 +5,24 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
     var apiHelper = [];
     apiHelper.push({
-        'function': '/api/getGraph',
+        'function': '/api/login',
         'description': 'Met deze functie kunnen we inloggen'
     });
     apiHelper.push({
-        'function': 'Meters()',
+        'function': '/api/getGraphs',
         'returns' : [
             {'type': 'Array',
-                'name': 'meter'},
+                'name': 'json'},
         ],
-        'description': 'Geeft de meters terug die bestaan.'
+        'description': 'Geeft de legenda en data terug van de grafiek per dag'
     });
     apiHelper.push({
-        'function': 'getUsageNow(int meterId)',
+        'function': '/api/getGraphs/24',
         'returns' : [
-            {'type': 'int',
-                'name': 'uses'},
+            {'type': 'Array',
+                'name': 'json'},
         ],
-        'description': 'Geeft het gebruik op het moment terug van de meter met het id.'
+        'description': 'Geeft de legenda en data terug van de grafiek per uur van de laatste 24 uur'
     });
     res.render('helper', {'functions': apiHelper});
 });
