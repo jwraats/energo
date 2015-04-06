@@ -1,0 +1,84 @@
+<h4>meter.py</h4>
+</br>
+<code class="language-python">
+import RPi.GPIO as GPIO
+import time
+import datetime as dt
+import MySQLdb
+
+#Build SQL connection
+HOST_SQL = 'localhost'
+USER_SQL = 'usernamne'
+PASS_SQL = 'password'
+DB_SQL = 'database'
+SSL_SQL = {'cert': 'ssl/client-cert.pem', 'key': 'ssl/client-key.pem'}
+conn = MySQLdb.connect(host=HOST_SQL, user=USER_SQL, passwd=PASS_SQL, ssl=SSL_SQL, db=DB_SQL)
+cursor = conn.cursor()
+
+#Getting the sensor data
+PIN_GPIO = 18
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(PIN_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+last = 0
+while True:
+        GPIO.wait_for_edge(PIN_GPIO, GPIO.FALLING)
+        millis = int(round(time.time() * 1000))
+        timestamp = dt.datetime.now()
+        uses = 360000.0 / (millis - last)
+        print(timestamp)
+        try:
+                cursor.execute("INSERT INTO homeautomatisation.meeting (timestamp, meter_id) VALUES (NOW(), 1)")
+                conn.commit()
+        except Exception:
+                pass
+        last = millis
+        time.sleep(0.01)
+
+GPIO.cleanup()
+</code>
+
+<h4>green.py</h4>
+</br>
+<code class="language-python">
+import urllib
+import json
+import time
+import datetime
+import MySQLdb
+
+#Build SQL connection
+HOST_SQL = 'homeautomatisation.titancorp.nl'
+USER_SQL = 'homeauto'
+PASS_SQL = '4cpLcj2cXTHJRT9D0RVH'
+DB_SQL = 'homeautomatisation'
+SSL_SQL = {'cert': 'ssl/client-cert.pem', 'key': 'ssl/client-key.pem'}
+conn = MySQLdb.connect(host=HOST_SQL, user=USER_SQL, passwd=PASS_SQL, ssl=SSL_SQL, db=DB_SQL)
+cursor = conn.cursor()
+lastTime  = ''
+insertNext = False
+
+while True:
+        xml_url = 'http://10.10.10.80/timedata.xml'
+        document = urllib.urlopen(xml_url).read()
+        data = document.split('rows:[')[1].split(']}});')[0]
+        lines = data.split('\n')
+        i = 0
+        for line in lines:
+                lineStrip = line.strip()
+                if(lineStrip and i != 0):
+                        tmps = lineStrip.split(',{v:')
+                        timeRow = tmps[0].replace(',{c:[{v:[', '').replace('{c:[{v:[', '').replace(']}', '').replace$
+                        pacW = tmps[2].replace('}', '')
+                        print(pacW)
+                        if(insertNext):
+                                cursor.execute("INSERT INTO homeautomatisation.green (timestamp, total_today) VALUES$
+                                conn.commit()
+                                print(pacW)
+                                insertNext = False
+                        if(lastTime == timeRow):
+                                insertNext = True
+                i+=1
+        lastTime = timeRow
+        time.sleep(5)
+</code>

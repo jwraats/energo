@@ -28,6 +28,7 @@ node_modules
 
 # IDE
 .idea
+*.iml
 
 # Configs
 config.js

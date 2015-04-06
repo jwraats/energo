@@ -5,7 +5,7 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
     var apiHelper = [];
     apiHelper.push({
-        'function': 'Login(string username, string password)',
+        'function': '/api/getGraph',
         'description': 'Met deze functie kunnen we inloggen'
     });
     apiHelper.push({
@@ -47,11 +47,12 @@ router.get('/getGraphs', function(req, res, next){
 });
 
 router.get('/getGraphs/24', function(req, res, next){
-    var meters = db.query('SELECT timestamp as date,(COUNT(*) / 1000) as kw,(SELECT (MAX(g.total_today) - MIN(g.total_today)) FROM homeautomatisation.green as g WHERE YEAR(g.timestamp) = YEAR(m.timestamp) AND MONTH(g.timestamp) = MONTH(m.timestamp) AND DAY(g.timestamp) = DAY(m.timestamp) AND HOUR(g.timestamp) = HOUR(m.timestamp)) as green FROM homeautomatisation.meeting as m GROUP BY YEAR(m.timestamp), MONTH(m.timestamp), DAY(m.timestamp), HOUR(m.timestamp) ORDER BY m.timestamp LIMIT 0,24', function(error, rows){
+    var meters = db.query('SELECT timestamp as date,(COUNT(*) / 1000) as kw,(SELECT (MAX(g.total_today) - MIN(g.total_today)) FROM homeautomatisation.green as g WHERE YEAR(g.timestamp) = YEAR(m.timestamp) AND MONTH(g.timestamp) = MONTH(m.timestamp) AND DAY(g.timestamp) = DAY(m.timestamp) AND HOUR(g.timestamp) = HOUR(m.timestamp)) as green FROM homeautomatisation.meeting as m GROUP BY YEAR(m.timestamp), MONTH(m.timestamp), DAY(m.timestamp), HOUR(m.timestamp) ORDER BY m.timestamp DESC LIMIT 0,24', function(error, rows){
         console.log(error);
         var labels = [];
         var deliver = [];
         var green = [];
+        rows.reverse();
         for(var i in rows){
             labels.push(new Date(rows[i].date).toLocaleString());
             deliver.push(rows[i].kw);

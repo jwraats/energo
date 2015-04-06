@@ -26,7 +26,6 @@ var lineChartData = {
 }
 Energo.init = function (){
     $(function() {
-        hljs.initHighlightingOnLoad();
         if($('#graphsMeter').length !== 0){
             Energo.createGraph();
         }
