@@ -27,10 +27,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 var routes = require('./routes/index');
 var api = require('./routes/api');
 var meter = require('./routes/meter');
+var auth = require('./routes/auth');
 
 //ROUTES
 app.use('/', routes);
 app.use('/meter', meter);
+
+/*
+ * /api/login is the only route without auth, /api/login generates API key
+ */
+app.post('/api/login', auth.login);
+
+// All other /api/* API request routing via JWT validation
+app.all('/api/*', auth.tokenValidator);
+
 app.use('/api', api);
 
 // catch 404 and forward to error handler

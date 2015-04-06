@@ -24,17 +24,34 @@ var lineChartData = {
         }
     ]
 }
+var token = "";
+
 Energo.init = function (){
     $(function() {
         if($('#graphsMeter').length !== 0){
-            Energo.createGraph();
+            Energo.auth(Energo.createGraph);
         }
     });
 };
 Energo.init();
 
-Energo.createGraph = function(){
-    $.ajax({url: "/api/getGraphs/24", success: function(result){
+Energo.auth = function(callback){ 
+	$.ajax({
+		url: '/api/login',
+		type: 'POST',
+		data: { username: "energoAPI", password: "f5d5e2cK(8fjd7s&^jf" }
+	}).done(function(data){
+		token = data.token;
+		callback();
+	});
+}
+
+Energo.createGraph = function(){	
+	$.ajax({
+		url: '/api/getGraphs/24',
+		type: 'GET',
+		beforeSend: function(request){request.setRequestHeader("X-Access-Token", token);}
+	}).done(function(result) {
         lineChartData.labels = result.labels;
         lineChartData.datasets[0].data = result.deliver;
         lineChartData.datasets[1].data = result.green;
@@ -43,5 +60,9 @@ Energo.createGraph = function(){
         window.myLine = new Chart(ctx).Line(lineChartData, {
             responsive: true
         });
-    }});
+    }).fail(function(e) {
+		if(e.code == 401) {
+			Energo.auth(Energo.createGraph);
+		}
+	});
 };
