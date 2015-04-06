@@ -52,7 +52,9 @@ router.get('/getGraphs/24', function(req, res, next){
         var labels = [];
         var deliver = [];
         var green = [];
-        rows.reverse();
+        if(rows.length !== 0) {
+            rows.reverse();
+        }
         for(var i in rows){
             labels.push(new Date(rows[i].date).toLocaleString());
             deliver.push(rows[i].kw);
