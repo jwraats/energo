@@ -39,8 +39,10 @@ var token = "";
 Energo.init = function (){
     $(function() {
         if($('#graphsMeter').length !== 0){
-            Energo.auth(Energo.createGraph);
-            Energo.auth(Energo.createGraphDay);
+            Energo.auth(function() {
+                Energo.createGraph();
+                Energo.createGraphDay();
+            });
         }
     });
 };

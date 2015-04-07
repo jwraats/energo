@@ -6,7 +6,7 @@ router.get('/', function(req, res, next) {
     var apiHelper = [];
     apiHelper.push({
         'function': '/api/login',
-        'description': 'Met deze functie kunnen we inloggen'
+        'description': 'Met deze functie kan worden ingelogd.'
     });
     apiHelper.push({
         'function': '/api/getGraphs',
