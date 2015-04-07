@@ -21,6 +21,16 @@ var lineChartData = {
             pointHighlightFill: "#00FF80",
             pointHighlightStroke: "rgba(220,220,220,1)",
             data: []
+        },
+        {
+            label: "Euro's bespaard",
+            fillColor: "rgba(255,217,24,0.2)",
+            strokeColor: "rgba(255,217,24,1)",
+            pointColor: "rgba(255,217,24,1)",
+            pointStrokeColor: "#FFD918",
+            pointHighlightFill: "#FFD918",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+            data: []
         }
     ]
 }
@@ -30,6 +40,7 @@ Energo.init = function (){
     $(function() {
         if($('#graphsMeter').length !== 0){
             Energo.auth(Energo.createGraph);
+            Energo.auth(Energo.createGraphDay);
         }
     });
 };
@@ -55,14 +66,38 @@ Energo.createGraph = function(){
         lineChartData.labels = result.labels;
         lineChartData.datasets[0].data = result.deliver;
         lineChartData.datasets[1].data = result.green;
+        lineChartData.datasets[2].data = result.greenDiscount;
 
         var ctx = document.getElementById("graphsMeter").getContext("2d");
         window.myLine = new Chart(ctx).Line(lineChartData, {
-            responsive: true
+            responsive: true,
+            legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
         });
     }).fail(function(e) {
 		if(e.code == 401) {
 			Energo.auth(Energo.createGraph);
 		}
 	});
+};
+Energo.createGraphDay = function(){
+    $.ajax({
+        url: '/api/getGraphs',
+        type: 'GET',
+        beforeSend: function(request){request.setRequestHeader("X-Access-Token", token);}
+    }).done(function(result) {
+        lineChartData.labels = result.labels;
+        lineChartData.datasets[0].data = result.deliver;
+        lineChartData.datasets[1].data = result.green;
+        lineChartData.datasets[2].data = result.greenDiscount;
+
+        var ctx = document.getElementById("graphsMeterDay").getContext("2d");
+        window.myLine = new Chart(ctx).Line(lineChartData, {
+            responsive: true,
+            legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+        });
+    }).fail(function(e) {
+        if(e.code == 401) {
+            Energo.auth(Energo.createGraph);
+        }
+    });
 };

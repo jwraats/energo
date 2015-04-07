@@ -41,11 +41,13 @@ GPIO.cleanup()
 <h4>green.py</h4>
 </br>
 <code class="language-python">
+from xml.dom import minidom
 import urllib
 import json
 import time
 import datetime
 import MySQLdb
+import json
 
 #Build SQL connection
 HOST_SQL = 'homeautomatisation.titancorp.nl'
@@ -59,26 +61,15 @@ lastTime  = ''
 insertNext = False
 
 while True:
-        xml_url = 'http://10.10.10.80/timedata.xml'
-        document = urllib.urlopen(xml_url).read()
-        data = document.split('rows:[')[1].split(']}});')[0]
-        lines = data.split('\n')
-        i = 0
-        for line in lines:
-                lineStrip = line.strip()
-                if(lineStrip and i != 0):
-                        tmps = lineStrip.split(',{v:')
-                        timeRow = tmps[0].replace(',{c:[{v:[', '').replace('{c:[{v:[', '').replace(']}', '').replace$
-                        pacW = tmps[2].replace('}', '')
-                        print(pacW)
-                        if(insertNext):
-                                cursor.execute("INSERT INTO homeautomatisation.green (timestamp, total_today) VALUES$
-                                conn.commit()
-                                print(pacW)
-                                insertNext = False
-                        if(lastTime == timeRow):
-                                insertNext = True
-                i+=1
-        lastTime = timeRow
-        time.sleep(5)
+        xml_url = 'http://10.10.10.80/status.xml'
+        try:
+                document = urllib.urlopen(xml_url).read()
+                dom = minidom.parseString(document)
+                totalToday = dom.getElementsByTagName('energy_today')[0].firstChild.nodeValue
+                cursor.execute("INSERT INTO homeautomatisation.green (timestamp, total_today) VALUES (NOW(), %0.4f)" % (totalToday))
+                cursor.commit()
+                time.sleep(55.5)
+        except Exception:
+                pass
+        time.sleep(0.5)
 </code>

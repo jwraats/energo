@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
             {'type': 'Array',
                 'name': 'json'},
         ],
-        'description': 'Geeft de legenda en data terug van de grafiek per dag'
+        'description': 'Geeft de legenda en data terug van de grafiek per dag (van de afgelopen 31 dagen)'
     });
     apiHelper.push({
         'function': '/api/getGraphs/24',
@@ -28,20 +28,26 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/getGraphs', function(req, res, next){
-    var meters = db.query('SELECT DATE(timestamp) as date, COUNT(timestamp) as tickes FROM meeting GROUP BY DATE(timestamp)', function(error, rows){
+    var meters = db.query('SELECT timestamp as date,(COUNT(*) / 1000) as kw,(SELECT (MAX(g.total_today) - MIN(g.total_today)) FROM homeautomatisation.green as g WHERE YEAR(g.timestamp) = YEAR(m.timestamp) AND MONTH(g.timestamp) = MONTH(m.timestamp) AND DAY(g.timestamp) = DAY(m.timestamp)) as green FROM homeautomatisation.meeting as m GROUP BY YEAR(m.timestamp), MONTH(m.timestamp), DAY(m.timestamp) ORDER BY m.timestamp DESC LIMIT 0,31', function(error, rows){
         console.log(rows);
         var labels = [];
         var deliver = [];
         var green = [];
+        var greenDiscount = [];
+        if(rows.length !== 0) {
+            rows.reverse();
+        }
         for(var i in rows){
             labels.push(new Date(rows[i].date).toLocaleString());
-            deliver.push(rows[i].tickes);
-            green.push(1234);
+            deliver.push(rows[i].kw);
+            green.push(rows[i].green);
+            greenDiscount.push((rows[i].green * 0.08));
         }
         res.json({
             'labels': labels,
             'deliver': deliver,
-            'green': green
+            'green': green,
+            'greenDiscount': greenDiscount
         });
     });
 });
@@ -52,6 +58,7 @@ router.get('/getGraphs/24', function(req, res, next){
         var labels = [];
         var deliver = [];
         var green = [];
+        var greenDiscount = [];
         if(rows.length !== 0) {
             rows.reverse();
         }
@@ -59,11 +66,13 @@ router.get('/getGraphs/24', function(req, res, next){
             labels.push(new Date(rows[i].date).toLocaleString());
             deliver.push(rows[i].kw);
             green.push(rows[i].green);
+            greenDiscount.push((rows[i].green * 0.08));
         }
         res.json({
             'labels': labels,
             'deliver': deliver,
-            'green': green
+            'green': green,
+            'greenDiscount': greenDiscount
         });
     });
 });
